@@ -2,37 +2,39 @@ import React, { useReducer } from 'react';
 import Dropdown from '../../../common/component/Dropdown';
 import styled from 'styled-components';
 import { cartLists, deliveryTypes } from '../../../common/data';
-import BillCalc from '../component/BillCalc';
+import BillCalc from './BillCalc';
 import Details from './Details';
 
-const Main = styled.div`
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	flex-shrink: 0;
-	flex-grow: 0;
-	.main {
+const S = {
+	Main: styled.div`
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		flex-shrink: 0;
+		flex-grow: 0;
+	`,
+	Menu: styled.div`
 		padding: calc(96px + env(safe-area-inset-left));
 		max-width: 100%;
 		width: 900px;
-	}
-	.menu {
+	`,
+	Title: styled.div`
 		border-bottom: 1px solid #434343;
-	}
-	.btn-list {
+	`,
+	Button: styled.button`
 		float: right;
 		margin-top: 16px;
-		& button {
-			padding: 0.5rem 1rem;
-			background-color: rgb(94, 94, 94);
-			color: #ffffff;
-			border: none;
-			font-size: 18px;
-			cursor: pointer;
-		}
-	}
-`;
+		padding: 0.5rem 1rem;
+		background-color: rgb(94, 94, 94);
+		color: #ffffff;
+		border: none;
+		font-size: 18px;
+		cursor: pointer;
+		outline: none;
+	`,
+};
+
 const INITIAL_STATE = {
 	cartList: cartLists,
 	delivery: {},
@@ -42,11 +44,11 @@ export const CartDispatch = React.createContext(null);
 export default function Cart() {
 	const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 	return (
-		<Main>
-			<div className='main'>
-				<div className='menu'>
+		<S.Main>
+			<S.Menu className='main'>
+				<S.Title className='menu'>
 					<h1>장바구니</h1>
-				</div>
+				</S.Title>
 				<div>
 					<h4>주소</h4>
 					<p>서울시 강남구 도산대로 174 7층</p>
@@ -57,23 +59,22 @@ export default function Cart() {
 						<Dropdown dataSource={deliveryTypes} />
 					</CartDispatch.Provider>
 				</div>
-				<div className='details'>
+				<div>
 					<h4>상품 내역</h4>
 					<CartDispatch.Provider value={{ state, dispatch }}>
 						<Details />
 					</CartDispatch.Provider>
 				</div>
-				{/* BillCalc 에는 Dropdown의 상태값과 BillList의 상태값이 필요함 */}
 				<CartDispatch.Provider value={{ state, dispatch }}>
 					<BillCalc />
 				</CartDispatch.Provider>
-				<div className='btn-list'>
-					<button type='button' onClick={() => log(state)}>
+				<div>
+					<S.Button type='button' onClick={() => log(state)}>
 						주문하기
-					</button>
+					</S.Button>
 				</div>
-			</div>
-		</Main>
+			</S.Menu>
+		</S.Main>
 	);
 }
 function log(state) {
@@ -102,14 +103,9 @@ function log(state) {
 				return prev + curr.count * curr.product_price;
 			}, 0) + state.delivery.delivery_price,
 	};
-	result.cartList = cartList;
-	result.totalProductPrice = cartList.reduce((prev, curr) => {
-		return prev + curr.count * curr.product_price;
-	}, 0);
-	result.deliveryType = state.delivery.name;
-	if (result.length <= 0) {
+	if (result.productList.length <= 0) {
 		alert('상품을 선택해주세요.');
-	} else if (!state.delivery) {
+	} else if (!result.deliveryType) {
 		alert('배송 방법을 선택해 주세요.');
 	} else {
 		console.log(result);
