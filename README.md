@@ -9,7 +9,7 @@
 - `styled-components` 사용
 
 ## 조건 1
-- `Dropdown`, `Counter`  컴포넌트 
+- `Dropdown`, `Counter`  컴포넌트
 - `Dropdown`
   - 기본값은 '선택해주세요'
   - 클릭 했을 때 세 가지 선택지

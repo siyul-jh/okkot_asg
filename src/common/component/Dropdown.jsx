@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
+import useDropdown from '../../hooks/useDropdown';
+import { CartDispatch } from '../../views/Cart/container';
 const ChromaKey = styled.div`
 	z-index: 0;
 	position: fixed;
@@ -78,53 +80,37 @@ const Select = styled.div`
 		}
 	}
 `;
-export default function Dropdown() {
-	const [menu, setMenu] = useState(false);
-	const [selectText, setSelectText] = useState('');
-	const [selectValue, setSelectValue] = useState('');
+export default function Dropdown({ dataSource }) {
+	const dropdown = useDropdown();
+	const { state, dispatch } = useContext(CartDispatch);
 	return (
 		<div style={{ position: 'relative', display: 'inline-block' }}>
-			{menu && (
+			{dropdown.menu && (
 				<>
-					<ChromaKey onClick={() => setMenu(!menu)} />
+					<ChromaKey onClick={dropdown.toggle} />
 					<Menu>
 						<ul>
-							<li
-								data-value={1}
-								onClick={(e) => {
-									setSelectText(e.currentTarget.childNodes[0].textContent);
-									setSelectValue(e.currentTarget.dataset.value);
-									setMenu(!menu);
-								}}>
-								직접 배송: 판매자가 직접 배송 <span>3,000원</span>
-							</li>
-							<li
-								data-value={2}
-								onClick={(e) => {
-									setSelectText(e.currentTarget.childNodes[0].textContent);
-									setSelectValue(e.currentTarget.dataset.value);
-									setMenu(!menu);
-								}}>
-								픽업: 정해진 시간에 픽업 <span>0원</span>
-							</li>
-							<li
-								data-value={3}
-								onClick={(e) => {
-									setSelectText(e.currentTarget.childNodes[0].textContent);
-									setSelectValue(e.currentTarget.dataset.value);
-									setMenu(!menu);
-								}}>
-								택배 배송 <span>5,000원</span>
-							</li>
+							{dataSource.map((item) => (
+								<li
+									key={item.id}
+									data-value={item.id}
+									onClick={() => {
+										dispatch({ type: 'setDropdown', delivery: item });
+										dropdown.toggle();
+									}}>
+									{/* <li key={item.id} data-value={item.id} onClick={() => dropdown.setDelivery(item)}> */}
+									{item.name} <span>{item.delivery_price.toLocaleString()}원</span>
+								</li>
+							))}
 						</ul>
 					</Menu>
 				</>
 			)}
-			<Select onClick={() => setMenu(!menu)}>
-				{!selectText && <label className='label-default'>선택해주세요.</label>}
+			<Select onClick={dropdown.toggle}>
+				{!state.delivery.id && <label className='label-default'>선택해주세요.</label>}
 				<div className='select'>
-					<div>{selectText}</div>
-					<input readOnly value={selectValue} aria-hidden='true' />
+					<div>{state.delivery.name}</div>
+					<input readOnly value={state.delivery.delivery_price} aria-hidden='true' />
 					<DownOutlined viewBox='0 0 122.88 66.91'>
 						<g xmlns='http://www.w3.org/2000/svg'>
 							<path d='M11.68,1.95C8.95-0.7,4.6-0.64,1.95,2.08c-2.65,2.72-2.59,7.08,0.13,9.73l54.79,53.13l4.8-4.93l-4.8,4.95 c2.74,2.65,7.1,2.58,9.75-0.15c0.08-0.08,0.15-0.16,0.22-0.24l53.95-52.76c2.73-2.65,2.79-7.01,0.14-9.73 c-2.65-2.72-7.01-2.79-9.73-0.13L61.65,50.41L11.68,1.95L11.68,1.95z' />

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import App from './App';
-import Cart from './views/Cart';
+import Cart from './views/Cart/container';
 
 export default function Router() {
 	return (
